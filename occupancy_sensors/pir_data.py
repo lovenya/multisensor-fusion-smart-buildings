@@ -3,15 +3,18 @@ import pandas as pd
 
 
 def generate_pir_data(num_days=7, num_samples_per_day=1440):
-    """Simulate PIR sensor data."""
+    """Simulate PIR sensor motion detection with timestamps."""
     data = []
+    start_time = pd.Timestamp("2025-01-01 00:00:00")
+
     for day in range(num_days):
-        motion_detected = np.random.choice([0, 1], size=num_samples_per_day, p=[0.7, 0.3])  # 30% chance of motion
-        false_positives = np.random.choice([0, 1], size=num_samples_per_day, p=[0.98, 0.02])  # 2% chance of false positive
-        motion_detected = np.maximum(motion_detected, false_positives)
-        data.append(pd.DataFrame({"Motion_Detected": motion_detected}))
+        timestamps = [start_time + pd.Timedelta(minutes=i) for i in range(num_samples_per_day)]
+        motion_detected = np.random.choice([0, 1], size=num_samples_per_day, p=[0.7, 0.3])
+        df = pd.DataFrame({"Timestamp": timestamps, "Motion_Detected": motion_detected})
+        data.append(df)
+        start_time += pd.Timedelta(days=1)
+
     return data
 
-# Save simulated data
 pir_data = generate_pir_data()
 pir_data[0].to_csv("synthetic_pir_data.csv", index=False)
